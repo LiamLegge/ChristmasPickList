@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Christmas Pick List</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Georgia, serif;
+      background: #f5f1e8;
+      color: #24352a;
+    }
+
+    body {
+      display: grid;
+      min-height: 100vh;
+      place-items: center;
+      margin: 0;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+
+    main {
+      width: min(100%, 28rem);
+      padding: 2rem;
+      border: 1px solid #c8d0c3;
+      border-radius: 8px;
+      background: #fffdf8;
+      box-shadow: 0 12px 30px rgb(36 53 42 / 12%);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #9b2c2c;
+    }
+
+    label,
+    input,
+    button {
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    input,
+    button {
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      border: 1px solid #9eae9b;
+      border-radius: 4px;
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      background: #24352a;
+      color: #fffdf8;
+    }
+
+    #result {
+      min-height: 1.5rem;
+      margin-bottom: 0;
+      font-size: 1.2rem;
+    }
+
+    .error {
+      color: #9b2c2c;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Christmas Pick List</h1>
+    <form id="lookup-form">
+      <label for="name">Enter your name</label>
+      <input id="name" name="name" autocomplete="off" required>
+      <button type="submit">Look up my secret santa</button>
+    </form>
+    <p id="result" aria-live="polite"></p>
+  </main>
+
+  <script>
+    const form = document.querySelector("#lookup-form");
+    const nameInput = document.querySelector("#name");
+    const result = document.querySelector("#result");
+    let assignments;
+
+    async function loadAssignments() {
+      const response = await fetch("secret_santa.txt", { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error("secret_santa.txt could not be loaded.");
+      }
+
+      const entries = await response.text();
+      return new Map(
+        entries
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => {
+            const separator = line.indexOf("->");
+            if (separator < 1) {
+              throw new Error("secret_santa.txt contains an invalid line.");
+            }
+            return [line.slice(0, separator).trim(), line.slice(separator + 2).trim()];
+          })
+      );
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      result.className = "";
+
+      try {
+        assignments ??= await loadAssignments();
+        const name = nameInput.value.trim();
+        const receiver = assignments.get(name);
+        result.textContent = receiver
+          ? `${name} -> ${receiver}`
+          : `'${name}' is not in the list.`;
+      } catch (error) {
+        result.className = "error";
+        result.textContent = error.message;
+      }
+    });
+  </script>
+</body>
+</html>
