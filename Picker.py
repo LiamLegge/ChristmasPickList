@@ -32,6 +32,11 @@ def pick_secret_santa_numbers(participants: Dict[str, List[str]], seed: Optional
         return None
     return {names[g]: names[r] for g, r in numeric_result.items()}
 
+def write_assignments_to_file(assignments: Dict[str, str], filename: str = "secret_santa.txt") -> None:
+    with open(filename, "w", encoding="utf-8") as output_file:
+        for giver, receiver in assignments.items():
+            output_file.write(f"{giver} -> {receiver}\n")
+
 if __name__ == "__main__":
     participants = {
         "Liam": ["Madison", "Lisa"],
@@ -39,31 +44,18 @@ if __name__ == "__main__":
         "Lisa": ["Liam", "Madison"],
         "Steven": ["Moira"],
         "Moira": ["Steven"],
-        "Amanda": ["Amber"],
-        "Amber": ["Amanda"],
+        "Jeff": ["Amanda", "Amber", "Chase"],
+        "Amanda": ["Amber", "Chase", "Jeff"],
+        "Amber": ["Amanda", "Chase", "Jeff"],
+        "Chase": ["Amanda", "Amber", "Jeff"],
+        "Mona": []
     }
 
-    seed = 42
+    seed = None
     result = pick_secret_santa_numbers(participants, seed)
     if result is None:
         print("No valid assignment found.")
     else:
-        while True:
-            name = input("Enter a name to look up, 'all' to print the list, or 'q' to quit: ").strip()
-
-            if name.lower() == "q":
-                break
-
-            if name.lower() == "all":
-                for giver, receiver in result.items():
-                    print(f"{giver} -> {receiver}")
-                continue
-
-            if name not in result:
-                print(f"'{name}' is not in the list.")
-                continue
-
-            line = f"{name} -> {result[name]}"
-            print(line)
-            input("Press Enter to clear the line...")  # wait for user to read it
-            print("\r" + " " * (len(line) + 10) + "\r", end="")
+        output_filename = "secret_santa.txt"
+        write_assignments_to_file(result, output_filename)
+        print(f"Assignments written to {output_filename}.")
