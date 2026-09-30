@@ -39,14 +39,20 @@ def write_assignments_to_file(assignments: Dict[str, str], filename: str = "secr
 
 if __name__ == "__main__":
     participants = {
-        "Liam": ["Madison & Aaron", "Lisa & BJ"],
-        "Madison & Aaron": ["Liam", "Lisa & BJ"],
-        "Lisa & BJ": ["Liam", "Madison & Aaron"],
-        "Steven & Moira": [],
-        "Amanda & Jeff": ["Amber & Josh", "Chase"],
-        "Amber & Josh": ["Amanda & Jeff", "Chase"],
-        "Chase": ["Amanda & Jeff", "Amber & Josh"],
-        "Mona & Ralph": []
+        "Liam": ["Madison", "Aaron", "Lisa", "BJ"],
+        "Madison": ["Aaron", "Liam", "Lisa", "BJ"],
+        "Aaron": ["Liam", "Madison", "Lisa", "BJ"],
+        "Lisa": ["Liam", "Madison", "Aaron", "BJ"],
+        "BJ": ["Liam", "Madison", "Aaron", "Lisa"],
+        "Steven": ["Moira"],
+        "Moira": ["Steven"],
+        "Amanda": ["Jeff", "Amber", "Josh", "Chase"],
+        "Jeff": ["Amanda", "Amber", "Josh", "Chase"],
+        "Amber": ["Josh", "Amanda", "Jeff", "Chase"],
+        "Josh": ["Amber", "Amanda", "Jeff", "Chase"],
+        "Chase": ["Amanda", "Jeff", "Amber", "Josh"],
+        "Mona": ["Ralph"],
+        "Ralph": ["Mona"],
     }
 
     seed = None
